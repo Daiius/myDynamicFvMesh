@@ -1250,6 +1250,30 @@ bool Foam::dynamicRefineFvMesh::init(const bool doInit)
         checkEightAnchorPoints(protectedCell_);
     }
 
+    
+    // 2023/01/21 Daiji Yamashita change to read existing cellSet
+    cellSet existingProtectedCellSet(
+        IOobject(
+            "polyMesh/sets/protectedCells",
+            time().constant(),
+            *this,
+            IOobject::READ_IF_PRESENT,
+            IOobject::NO_WRITE,
+            false
+        )
+    );
+
+    Info << "Customized code to read protectedCell cellSets...\n";
+    Info << "\texisting protectedCells count: " << existingProtectedCellSet.size() << "\n";
+    if (existingProtectedCellSet.size() > 0)
+    {
+        forAll (existingProtectedCellSet, i)
+        {
+          protectedCell_.set(existingProtectedCellSet[i]);
+        }
+    }
+  
+
     if (!returnReduce(protectedCell_.any(), orOp<bool>()))
     {
         protectedCell_.clear();
