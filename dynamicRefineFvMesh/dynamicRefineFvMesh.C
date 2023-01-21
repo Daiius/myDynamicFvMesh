@@ -1252,24 +1252,16 @@ bool Foam::dynamicRefineFvMesh::init(const bool doInit)
 
     
     // 2023/01/21 Daiji Yamashita change to read existing cellSet
-    cellSet existingProtectedCellSet(
-        IOobject(
-            "polyMesh/sets/protectedCells",
-            time().constant(),
-            *this,
-            IOobject::READ_IF_PRESENT,
-            IOobject::NO_WRITE,
-            false
-        )
-    );
+    // TODO : does not work start at non-zero time
+    cellSet existingProtectedCells(*this, "protectedCells");
 
     Info << "Customized code to read protectedCell cellSets...\n";
-    Info << "\texisting protectedCells count: " << existingProtectedCellSet.size() << "\n";
-    if (existingProtectedCellSet.size() > 0)
+    Info << "\texisting protectedCells count: " << returnReduce(existingProtectedCells.size(), sumOp<label>()) << "\n";
+    if (returnReduce(existingProtectedCells.size(), sumOp<label>()) > 0)
     {
-        forAll (existingProtectedCellSet, i)
+        forAll (this->Cf(), i)
         {
-          protectedCell_.set(existingProtectedCellSet[i]);
+          if (existingProtectedCells[i]) protectedCell_.set(i);
         }
     }
   
