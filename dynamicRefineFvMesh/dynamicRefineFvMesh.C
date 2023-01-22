@@ -1253,16 +1253,20 @@ bool Foam::dynamicRefineFvMesh::init(const bool doInit)
     
     // 2023/01/21 Daiji Yamashita change to read existing cellSet
     // TODO : does not work start at non-zero time
-    cellSet existingProtectedCells(*this, "protectedCells", READ_IF_PRESENT);
-
-    Info << "Customized code to read protectedCell cellSets...\n";
-    Info << "\texisting protectedCells count: " << returnReduce(existingProtectedCells.size(), sumOp<label>()) << "\n";
-    if (returnReduce(existingProtectedCells.size(), sumOp<label>()) > 0)
-    {
-        forAll (this->Cf(), i)
-        {
-          if (existingProtectedCells[i]) protectedCell_.set(i);
-        }
+    //cellSet existingProtectedCells(*this, "protectedCells", READ_IF_PRESENT);
+    Info << "Customized code to read protectedCell cellZone...\n";
+    label zoneId = this->cellZones().findZoneID("protectedCells");
+    if (zoneId != -1) {
+      const labelList& cells = this->cellZones()[zoneId];
+      Info << "\texisting protectedCells count: " 
+           << returnReduce(cells.size(), sumOp<label>())
+           << "\n";
+      forAll(cells, i)
+      {
+        protectedCell_.set(cells[i]);
+      }
+    } else {
+      Info << "\tcellZone: protectedCells not found, skipping...\n";
     }
   
 
