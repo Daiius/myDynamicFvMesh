@@ -1,4 +1,10 @@
 /Make
 !Make/files
 !Make/options
-
+/tests/*/0.[0-9]*
+/tests/*/dynamicCode
+/tests/*/constant/polyMesh
+/tests/*/0
+/tests/*/.setSet
+/tests/*/VTK
+/tests/*/log.*
