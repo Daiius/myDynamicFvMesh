@@ -1,0 +1,62 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2206                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    inlet
+    {
+      type  codedFixedValue;
+      value uniform (0 0 0);
+      name  distributedInletVelocity;
+
+      code
+      #{
+        fvPatchField U(
+          patch().lookupPatchField<volVectorField, vector>("U")
+        );
+
+        forAll(U, i)
+        {
+          const scalar x = patch().Cf()[i][0];
+          const scalar y = patch().Cf()[i][1];
+
+          const bool isInside = (-10 <= x && x <= 10) && (-10 <= y && y <= 10);
+
+          U[i] = vector(0, 0, isInside ? -1 : 0);
+        }
+
+        operator==(U);
+        
+      #};
+    }
+    
+    outlet
+    {
+      type  zeroGradient;
+    }
+
+    side
+    {
+      type  noSlip;
+    }
+}
+
+
+// ************************************************************************* //

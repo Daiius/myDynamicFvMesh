@@ -1,0 +1,15 @@
+FoamFile
+{
+  version 2.0;
+  format  ascii;
+  class dictionary;
+  object  meshDict;
+}
+
+surfaceFile "surfaces/test.fms";
+
+minCellSize 0.99;
+maxCellSize 1.01;
+boundaryCellSize  10.0;
+
+
