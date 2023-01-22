@@ -1253,7 +1253,7 @@ bool Foam::dynamicRefineFvMesh::init(const bool doInit)
     
     // 2023/01/21 Daiji Yamashita change to read existing cellSet
     // TODO : does not work start at non-zero time
-    cellSet existingProtectedCells(*this, "protectedCells");
+    cellSet existingProtectedCells(*this, "protectedCells", READ_IF_PRESENT);
 
     Info << "Customized code to read protectedCell cellSets...\n";
     Info << "\texisting protectedCells count: " << returnReduce(existingProtectedCells.size(), sumOp<label>()) << "\n";
